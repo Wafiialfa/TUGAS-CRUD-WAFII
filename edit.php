@@ -1,0 +1,126 @@
+<?php
+require "koneksi.php";
+
+// Ambil id dari URL
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    header("Location: index.php");
+    exit();
+}
+
+// Ambil data lama dari database
+$query = "SELECT * FROM paket_rental WHERE id = ?";
+$stmt = mysqli_prepare($koneksi, $query);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($result);
+
+if (!$data) {
+    header("Location: index.php");
+    exit();
+}
+
+$namaPaket = $data['nama_paket'];
+$jenis = $data['jenis'];
+$durasi = $data['durasi'];
+$ketentuan = $data['ketentuan'];
+$namaPaketErr = $jenisErr = $durasiErr = $ketentuanErr = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validasi Nama Paket
+    $namaPaket = trim($_POST["nama_paket"]);
+    if (empty($namaPaket)) {
+        $namaPaketErr = "Nama paket wajib diisi";
+    }
+
+    // Validasi Jenis Paket
+    $jenis = $_POST["jenis"] ?? "";
+    if (empty($jenis)) {
+        $jenisErr = "Pilih jenis paket";
+    }
+
+    // Validasi Durasi Sewa
+    $durasi = trim($_POST["durasi"]);
+    if (empty($durasi)) {
+        $durasiErr = "Durasi sewa wajib diisi";
+    }
+
+    // Validasi Ketentuan
+    $ketentuan = trim($_POST["ketentuan"]);
+    if (empty($ketentuan)) {
+        $ketentuanErr = "Ketentuan wajib diisi";
+    }
+
+    // Kalau semua valid, update ke database
+    if (!$namaPaketErr && !$jenisErr && !$durasiErr && !$ketentuanErr) {
+        $queryUpdate = "UPDATE paket_rental SET nama_paket = ?, jenis = ?, durasi = ?, ketentuan = ? WHERE id = ?";
+        $stmtUpdate = mysqli_prepare($koneksi, $queryUpdate);
+        mysqli_stmt_bind_param($stmtUpdate, "ssssi", $namaPaket, $jenis, $durasi, $ketentuan, $id);
+        mysqli_stmt_execute($stmtUpdate);
+
+        header("Location: index.php");
+        exit();
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Paket Rental</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <span class="logo">RentalKu</span>
+    <a href="index.php">Daftar Paket</a>
+    <a href="tambah.php">Tambah Paket</a>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>Edit Paket Rental</h2>
+        <form method="POST" action="<?php echo $_SERVER["PHP_SELF"] . "?id=" . $id; ?>">
+            <div class="form-group">
+                <label for="nama_paket">Nama Paket:</label>
+                <input type="text" id="nama_paket" name="nama_paket" value="<?php echo $namaPaket; ?>">
+                <span class="error"><?php echo $namaPaketErr ? "* $namaPaketErr" : ""; ?></span>
+            </div>
+
+            <div class="form-group">
+                <label for="jenis">Jenis Paket:</label>
+                <select id="jenis" name="jenis">
+                    <option value="">-- Pilih --</option>
+                    <option value="Lepas Kunci" <?php echo ($jenis == "Lepas Kunci") ? "selected" : ""; ?>>Lepas Kunci</option>
+                    <option value="All-in" <?php echo ($jenis == "All-in") ? "selected" : ""; ?>>All-in</option>
+                    <option value="Luar Kota" <?php echo ($jenis == "Luar Kota") ? "selected" : ""; ?>>Luar Kota</option>
+                </select>
+                <span class="error"><?php echo $jenisErr ? "* $jenisErr" : ""; ?></span>
+            </div>
+
+            <div class="form-group">
+                <label for="durasi">Durasi Sewa:</label>
+                <input type="text" id="durasi" name="durasi" value="<?php echo $durasi; ?>">
+                <span class="error"><?php echo $durasiErr ? "* $durasiErr" : ""; ?></span>
+            </div>
+
+            <div class="form-group">
+                <label for="ketentuan">Ketentuan:</label>
+                <textarea id="ketentuan" name="ketentuan"><?php echo $ketentuan; ?></textarea>
+                <span class="error"><?php echo $ketentuanErr ? "* $ketentuanErr" : ""; ?></span>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="btn">Simpan Perubahan</button>
+                <a href="index.php" class="btn btn-outline">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
