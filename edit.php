@@ -1,14 +1,14 @@
 <?php
 require "koneksi.php";
 
-// Ambil id dari URL
+
 $id = $_GET['id'] ?? null;
 if (!$id) {
     header("Location: index.php");
     exit();
 }
 
-// Ambil data lama dari database
+
 $query = "SELECT * FROM paket_rental WHERE id = ?";
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -28,31 +28,31 @@ $ketentuan = $data['ketentuan'];
 $namaPaketErr = $jenisErr = $durasiErr = $ketentuanErr = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validasi Nama Paket
+    
     $namaPaket = trim($_POST["nama_paket"]);
     if (empty($namaPaket)) {
         $namaPaketErr = "Nama paket wajib diisi";
     }
 
-    // Validasi Jenis Paket
+    
     $jenis = $_POST["jenis"] ?? "";
     if (empty($jenis)) {
         $jenisErr = "Pilih jenis paket";
     }
 
-    // Validasi Durasi Sewa
+    
     $durasi = trim($_POST["durasi"]);
     if (empty($durasi)) {
         $durasiErr = "Durasi sewa wajib diisi";
     }
 
-    // Validasi Ketentuan
+    
     $ketentuan = trim($_POST["ketentuan"]);
     if (empty($ketentuan)) {
         $ketentuanErr = "Ketentuan wajib diisi";
     }
 
-    // Kalau semua valid, update ke database
+    
     if (!$namaPaketErr && !$jenisErr && !$durasiErr && !$ketentuanErr) {
         $queryUpdate = "UPDATE paket_rental SET nama_paket = ?, jenis = ?, durasi = ?, ketentuan = ? WHERE id = ?";
         $stmtUpdate = mysqli_prepare($koneksi, $queryUpdate);

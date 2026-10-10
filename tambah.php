@@ -5,31 +5,31 @@ $namaPaket = $jenis = $durasi = $ketentuan = "";
 $namaPaketErr = $jenisErr = $durasiErr = $ketentuanErr = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validasi Nama Paket
+    
     $namaPaket = trim($_POST["nama_paket"]);
     if (empty($namaPaket)) {
         $namaPaketErr = "Nama paket wajib diisi";
     }
 
-    // Validasi Jenis Paket
+    
     $jenis = $_POST["jenis"] ?? "";
     if (empty($jenis)) {
         $jenisErr = "Pilih jenis paket";
     }
 
-    // Validasi Durasi Sewa
+    
     $durasi = trim($_POST["durasi"]);
     if (empty($durasi)) {
         $durasiErr = "Durasi sewa wajib diisi";
     }
 
-    // Validasi Ketentuan
+    
     $ketentuan = trim($_POST["ketentuan"]);
     if (empty($ketentuan)) {
         $ketentuanErr = "Ketentuan wajib diisi";
     }
 
-    // Kalau semua valid, simpan ke database
+    
     if (!$namaPaketErr && !$jenisErr && !$durasiErr && !$ketentuanErr) {
         $query = "INSERT INTO paket_rental (nama_paket, jenis, durasi, ketentuan) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($koneksi, $query);
