@@ -25,7 +25,7 @@ $result = mysqli_query($koneksi, $query);
     <div class="card">
         <h2>Daftar Paket Rental Mobil</h2>
 
-        <?php if (isset($_GET['status']) && $_GET['status'] == 'berhasil_hapus') { ?>
+        <?php if (isset($_GET['status']) && $_POST['status'] == 'berhasil_hapus') { ?>
             <div class="alert-sukses">Paket berhasil dihapus.</div>
         <?php } ?>
 
